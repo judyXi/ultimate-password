@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎯 終極密碼 - 簡化版</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: url('img/01.jpg') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    /* 添加一個半透明的遮罩層，讓文字更容易閱讀 */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 0;
+    }
+
+    .game-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      animation: cardGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes cardGlow {
+      0% {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.1);
+      }
+      100% {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(255, 255, 255, 0.3);
+      }
+    }
+
+    .title {
+      font-size: 2.5rem;
+      font-weight: bold;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .title-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+      animation: iconPulse 2s ease-in-out infinite;
+      overflow: hidden;
+    }
+
+    .title-icon img {
+      width: 35px;
+      height: 35px;
+      object-fit: contain;
+    }
+
+    @keyframes iconPulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    .range-display {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 15px 30px;
+      border-radius: 25px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+
+    .input-section {
+      margin: 30px 0;
+    }
+
+    .guess-input {
+      width: 200px;
+      padding: 15px 20px;
+      border: 3px solid #ddd;
+      border-radius: 25px;
+      font-size: 1.1rem;
+      text-align: center;
+      outline: none;
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    .guess-input:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .guess-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 25px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-left: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .guess-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+    }
+
+
+
+    .message {
+      margin: 20px 0;
+      padding: 15px 25px;
+      border-radius: 15px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .message.success {
+      background: linear-gradient(135deg, #4ecdc4, #44a08d);
+      color: white;
+    }
+
+    .message.error {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+      color: white;
+    }
+
+    .message.hint {
+      background: linear-gradient(135deg, #feca57, #ff9ff3);
+      color: white;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin: 30px 0;
+    }
+
+    .stat-item {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 15px 25px;
+      border-radius: 15px;
+      margin: 10px;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    .restart-btn {
+      background: linear-gradient(135deg, #ffb347, #ffa726);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+      opacity: 0;
+    }
+
+    .restart-btn.show {
+      opacity: 1;
+    }
+
+    .restart-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .debug-info {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+  </style>
+</head>
+<body>
+  <!-- 調試信息 -->
+  <div class="debug-info" id="debugInfo">
+    遊戲狀態: 載入中...
+  </div>
+
+  <div class="game-card">
+    <h1 class="title">
+      <div class="title-icon">
+        <img src="img/02.png" alt="遊戲圖標">
+      </div>
+      終極密碼
+    </h1>
+         <p id="encourageText" style="color: #666; margin-bottom: 20px;">你行你來猜</p>
+    
+         <div class="range-display" id="range">
+       目前範圍：1 ~ 200
+     </div>
+
+        <div class="input-section">
+      <input type="number" id="guessInput" class="guess-input" placeholder="輸入你的數字" min="1" max="200">
+      <button onclick="guess()" class="guess-btn">🔍 猜測</button>
+    </div>
+
+    <div class="message" id="message">
+      準備開始你的神秘數字之旅！
+    </div>
+
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-value" id="attempts">0</div>
+        <div class="stat-label">猜測次數</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="bestScore">-</div>
+        <div class="stat-label">最佳記錄</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="gamesPlayed">0</div>
+        <div class="stat-label">遊戲次數</div>
+      </div>
+    </div>
+
+    <button onclick="restartGame()" class="restart-btn" id="restartBtn">重新開始</button>
+  </div>
+
+  <script>
+    // 調試功能
+    function updateDebugInfo(message) {
+      const debugInfo = document.getElementById('debugInfo');
+      if (debugInfo) {
+        debugInfo.textContent = message;
+      }
+      console.log(message);
+    }
+
+    // 遊戲變數
+    let low = 1;
+    let high = 200;
+    let answer = Math.floor(Math.random() * (high - low - 1)) + low + 1;
+    let attempts = 0;
+    let gamesPlayed = 0;
+    let bestScore = localStorage.getItem('bestScore') || '-';
+
+    updateDebugInfo('遊戲初始化完成');
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      updateDebugInfo('DOM載入完成，開始初始化...');
+      
+      try {
+        updateStats();
+        
+        // 確保輸入框可以正常使用
+        const input = document.getElementById("guessInput");
+        if (input) {
+          input.disabled = false;
+          input.readOnly = false;
+          input.focus();
+          
+          // 添加鍵盤事件
+          input.addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+              guess();
+            }
+          });
+          
+          updateDebugInfo('輸入框設置完成');
+        } else {
+          updateDebugInfo('錯誤: 找不到輸入框元素');
+        }
+        
+        updateDebugInfo('遊戲初始化完成，可以開始遊戲！');
+      } catch (error) {
+        updateDebugInfo('初始化錯誤: ' + error.message);
+        console.error('初始化錯誤:', error);
+      }
+    });
+
+    // 猜測函數
+    function guess() {
+      updateDebugInfo('執行猜測函數');
+      
+      const input = document.getElementById("guessInput");
+      if (!input) {
+        updateDebugInfo('錯誤: 找不到輸入框');
+        return;
+      }
+      
+      const guessNum = parseInt(input.value);
+      const rangeDisplay = document.getElementById("range");
+
+      updateDebugInfo('猜測數字: ' + guessNum);
+
+      if (isNaN(guessNum)) {
+        showMessage("⚠️ 請輸入有效的數字！", "error");
+        updateDebugInfo('輸入無效數字');
+        return;
+      }
+
+      if (guessNum <= low || guessNum >= high) {
+        showMessage("❌ 這個數字不在範圍內，請再試一次！", "error");
+        updateDebugInfo('數字超出範圍');
+        return;
+      }
+
+           attempts++;
+     updateStats();
+     updateEncourageText();
+
+      if (guessNum === answer) {
+        gamesPlayed++;
+        showMessage("🎉 答對了！你也猜太久 ? ? ?", "success");
+        showRestartButton();
+        updateBestScore();
+        updateDebugInfo('遊戲勝利！');
+      } else if (guessNum > answer) {
+        high = guessNum;
+        showMessage(`👉 太大了！新範圍：${low} ~ ${high}`, "hint");
+        updateDebugInfo('猜測太大，新範圍: ' + low + ' ~ ' + high);
+      } else {
+        low = guessNum;
+        showMessage(`👉 太小了！新範圍：${low} ~ ${high}`, "hint");
+        updateDebugInfo('猜測太小，新範圍: ' + low + ' ~ ' + high);
+      }
+
+      rangeDisplay.textContent = `目前範圍：${low} ~ ${high}`;
+      input.value = "";
+      input.focus();
+    }
+
+    // 顯示消息
+    function showMessage(text, type) {
+      const msg = document.getElementById("message");
+      if (msg) {
+        msg.textContent = text;
+        msg.className = `message ${type}`;
+      }
+    }
+
+    // 更新統計
+    function updateStats() {
+      const attemptsEl = document.getElementById("attempts");
+      const gamesPlayedEl = document.getElementById("gamesPlayed");
+      const bestScoreEl = document.getElementById("bestScore");
+      
+      if (attemptsEl) attemptsEl.textContent = attempts;
+      if (gamesPlayedEl) gamesPlayedEl.textContent = gamesPlayed;
+      if (bestScoreEl) bestScoreEl.textContent = bestScore;
+    }
+
+    // 更新鼓勵文字
+    function updateEncourageText() {
+      const encourageEl = document.getElementById("encourageText");
+      if (!encourageEl) return;
+      
+      const encourageMessages = [
+        "你行你來猜", // 0次（初始）
+        "差一點了？！", // 1次 - 催促
+        "你行嗎？", // 2次 - 催促
+        "認真？", // 3次 - 催促
+        "還沒找到？", // 4次 - 調侃
+        "你是不是故意的？", // 5次 - 調侃
+        "我開始懷疑你了", // 6次 - 調侃
+        "算了，隨便你", // 7次 - 無奈
+        "我已經累了", // 8次 - 無奈
+        "我放棄了...", // 9次 - 放棄
+        "再見，我先走了" // 10次 - 放棄
+      ];
+      
+      let text;
+      if (attempts > 10) {
+        text = "晚安馬卡巴卡";
+      } else {
+        let messageIndex = attempts;
+        if (messageIndex >= encourageMessages.length) {
+          messageIndex = encourageMessages.length - 1;
+        }
+        text = encourageMessages[messageIndex];
+      }
+      
+      encourageEl.textContent = text;
+    }
+
+    // 更新最佳記錄
+    function updateBestScore() {
+      if (bestScore === '-' || attempts < parseInt(bestScore)) {
+        bestScore = attempts.toString();
+        localStorage.setItem('bestScore', bestScore);
+        updateStats();
+      }
+    }
+
+    // 顯示重新開始按鈕
+    function showRestartButton() {
+      const restartBtn = document.getElementById("restartBtn");
+      if (restartBtn) {
+        restartBtn.classList.add("show");
+      }
+    }
+
+    // 重新開始遊戲
+    function restartGame() {
+      updateDebugInfo('重新開始遊戲');
+      
+             low = 1;
+       high = 200;
+      answer = Math.floor(Math.random() * (high - low - 1)) + low + 1;
+      attempts = 0;
+      
+             const rangeEl = document.getElementById("range");
+       const messageEl = document.getElementById("message");
+       const inputEl = document.getElementById("guessInput");
+       const restartBtn = document.getElementById("restartBtn");
+       const encourageEl = document.getElementById("encourageText");
+       
+              if (rangeEl) rangeEl.textContent = "目前範圍：1 ~ 200";
+       if (messageEl) {
+         messageEl.textContent = "準備開始你的神秘數字之旅！";
+         messageEl.className = "message";
+       }
+       if (inputEl) inputEl.value = "";
+       if (restartBtn) restartBtn.classList.remove("show");
+       if (encourageEl) encourageEl.textContent = "你行你來猜";
+      
+      updateStats();
+      updateDebugInfo('遊戲重新開始完成');
+    }
+
+    // 確保函數在全局範圍內可用
+    window.guess = guess;
+    window.restartGame = restartGame;
+  </script>
+</body>
+</html>
